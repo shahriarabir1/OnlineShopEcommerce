@@ -2,12 +2,14 @@ package com.RaqamiUniverse.RaqamiOnlineShop.service.product;
 
 import com.RaqamiUniverse.RaqamiOnlineShop.dto.ProductDto;
 import com.RaqamiUniverse.RaqamiOnlineShop.exception.AlreadyExistsException;
+import com.RaqamiUniverse.RaqamiOnlineShop.exception.ProductNotFoundException;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Category;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Product;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.CategoryRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.ProductRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.request.CreateProductRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,17 +52,18 @@ public class ProductService implements IProductService {
     }
     @Override
     public Product getProduct(Long productId) {
-        return null;
+        return productRepository.findById(productId)
+                .orElseThrow(()->new ProductNotFoundException("Product not found"));
     }
 
     @Override
     public List<Product> getAllProducts() {
-        return List.of();
+        return productRepository.findAll();
     }
 
     @Override
     public void deleteProduct(Long productId) {
-
+        productRepository.deleteById(productId);
     }
 
     @Override
