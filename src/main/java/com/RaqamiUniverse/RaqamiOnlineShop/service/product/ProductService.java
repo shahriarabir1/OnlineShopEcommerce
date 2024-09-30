@@ -68,17 +68,29 @@ public class ProductService implements IProductService {
 
     @Override
     public Product updateProduct(Product product) {
-        return null;
+        Product prod=productRepository.findById(product.getId())
+                .orElseThrow(()->new ProductNotFoundException("Product not found"));
+        prod.setName(product.getName());
+        prod.setDescription(product.getDescription());
+        prod.setBrand(product.getBrand());
+        prod.setInventory(product.getInventory());
+        prod.setDiscount(product.getDiscount());
+        prod.setPrice(product.getPrice());
+        return productRepository.save(prod);
     }
 
     @Override
     public List<Product> getProductsByCategory(String category) {
-        return List.of();
+        return Optional.ofNullable(productRepository.findByCategoryName(category))
+                .orElseThrow(()->new ProductNotFoundException("Category not found"));
+
     }
 
     @Override
     public List<Product> getProductsByBrand(String brand) {
-        return List.of();
+        return Optional.ofNullable(productRepository.findByBrandName(brand))
+                .orElseThrow(()->new ProductNotFoundException("Brand items not found"));
+
     }
 
     @Override
