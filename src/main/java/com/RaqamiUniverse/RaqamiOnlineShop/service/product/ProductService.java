@@ -1,32 +1,37 @@
 package com.RaqamiUniverse.RaqamiOnlineShop.service.product;
 
+import com.RaqamiUniverse.RaqamiOnlineShop.dto.ImageDto;
 import com.RaqamiUniverse.RaqamiOnlineShop.dto.ProductDto;
-import com.RaqamiUniverse.RaqamiOnlineShop.exception.AlreadyExistsException;
 import com.RaqamiUniverse.RaqamiOnlineShop.exception.ProductNotFoundException;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Category;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Product;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.CategoryRepository;
+import com.RaqamiUniverse.RaqamiOnlineShop.repository.ImageRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.ProductRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.request.CreateProductRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
+    private final ImageRepository imageRepository;
     @Override
     public Product addProduct(CreateProductRequest product) {
         if(productExist(product.getName(),product.getBrand())){
-           Product prod=productRepository.findByNameAndBrand(product.getName(),product.getBrand());
-           int inventory=prod.getInventory()+1;
-           prod.setInventory(inventory);
-           return productRepository.save(prod);
+            Product prod=productRepository.findByNameAndBrand(product.getName(),product.getBrand());
+            Long inventory=prod.getInventory()+1;
+            prod.setInventory(inventory);
+            return productRepository.save(prod);
         }
         Category category= Optional.ofNullable(categoryRepository.findByName(product.getCategory().getName()))
                 .orElseGet(()->{
@@ -88,88 +93,112 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductsByBrand(String brand) {
-        return Optional.ofNullable(productRepository.findByBrandName(brand))
+        return Optional.ofNullable(productRepository.findByBrand(brand))
                 .orElseThrow(()->new ProductNotFoundException("Brand items not found"));
 
     }
 
     @Override
     public List<Product> getProductsByCategoryAndBrand(String category, String brand) {
-        return List.of();
+        return Optional.ofNullable(productRepository.findByCategoryNameAndBrand(category,brand))
+                .orElseThrow(()->new ProductNotFoundException("Category not found"));
     }
 
     @Override
     public List<Product> getProductsByOffer(Long offerId) {
-        return List.of();
+        return Optional.ofNullable(productRepository.findByOfferId(offerId))
+                .orElseThrow(()->new ProductNotFoundException("Offer not found"));
     }
 
     @Override
     public Long getInventory(Long productId) {
-        return 0L;
+        Product prod= productRepository.findById(productId)
+                .orElseThrow(()->new ProductNotFoundException("Product not found"));
+        return prod.getInventory();
     }
 
     @Override
     public List<Product> getProductsByDiscount(Double discount) {
-        return List.of();
+        return Optional.ofNullable(productRepository.findByDiscount(discount))
+                .orElseThrow(()->new ProductNotFoundException("Product have  not discount"));
     }
 
     @Override
     public List<Product> getProductsByName(String name) {
-        return List.of();
+        return Optional.ofNullable(productRepository.findByName(name))
+                .orElseThrow(()->new ProductNotFoundException("Product not found"));
     }
 
     @Override
     public List<Product> getProductsByBrandAndName(String brand, String name) {
-        return List.of();
+        return Optional.ofNullable(productRepository.findByBrandAndName(brand,name))
+                .orElseThrow(()->new ProductNotFoundException("Product not found"));
     }
 
     @Override
-    public List<Product> addAllProducts(List<Product> products) {
-        return List.of();
+    public List<Product> addAllProducts(List<CreateProductRequest> products) {
+       return products.stream().map(this::addProduct).collect(Collectors.toList());
+
     }
 
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
-        return 0L;
+        List<Product> prod=getProductsByBrandAndName(brand,name);
+        return (long) prod.size();
+
     }
 
     @Override
     public Long countProductsByCategory(String category) {
-        return 0L;
+        List<Product> prod=getProductsByCategory(category);
+        return (long) prod.size();
     }
 
     @Override
     public Long countProductsByOffer(Long offerId) {
-        return 0L;
+        List<Product>prod=getProductsByOffer(offerId);
+        return (long) prod.size();
     }
 
     @Override
     public Long countProductsByDiscount(Double discount) {
-        return 0L;
+        List<Product>prod=getProductsByDiscount(discount);
+        return (long) prod.size();
     }
 
     @Override
     public Long countProductsByName(String name) {
-        return 0L;
+        List<Product>prod=getProductsByName(name);
+        return (long) prod.size();
     }
 
     @Override
     public Long countProductsByBrand(String brand) {
-        return 0L;
+        List<Product>prod=getProductsByBrand(brand);
+        return (long) prod.size();
     }
 
     @Override
     public Long countProductsByCategoryAndBrand(String category, String brand) {
-        return 0L;
+        List<Product>prod=getProductsByCategoryAndBrand(category,brand);
+        return (long) prod.size();
     }
 
     @Override
     public List<ProductDto> getConvertedProducts(List<Product> products) {
-        return List.of();
+        return products.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     @Override
     public ProductDto convertToDto(Product product) {
-        return null;
+        ProductDto dto=modelMapper.map(product,ProductDto.class);
+        List<Image> images=imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDto=images
+                .stream()
+                .map(image -> modelMapper.map(image,ImageDto.class))
+                .toList();
+
+        dto.setImage(imageDto);
+        return dto;
     }
 }

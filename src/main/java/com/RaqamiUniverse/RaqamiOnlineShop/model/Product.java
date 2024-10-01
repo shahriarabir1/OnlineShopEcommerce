@@ -28,7 +28,7 @@ public class Product {
     private String description;
     private BigDecimal price;
     private String brand;
-    private int inventory;
+    private Long inventory;
     private Double discount;
 
     @ManyToOne
@@ -70,7 +70,7 @@ public class Product {
 
     private LocalDateTime created;
 
-    public Product(String name, String description,String brand, int inventory, Double discount, BigDecimal price, Category category) {
+    public Product(String name, String description,String brand, Long inventory, Double discount, BigDecimal price, Category category) {
         this.name = name;
         this.description = description;
         this.price = price;

@@ -20,7 +20,7 @@ public interface IProductService {
     List<Product>getProductsByDiscount(Double discount);
     List<Product>getProductsByName(String name);
     List<Product>getProductsByBrandAndName(String brand, String name);
-    List<Product>addAllProducts(List<Product> products);
+    List<Product>addAllProducts(List<CreateProductRequest> products);
     Long countProductsByBrandAndName(String brand, String name);
     Long countProductsByCategory(String category);
     Long countProductsByOffer(Long offerId);
