@@ -1,10 +1,12 @@
 package com.RaqamiUniverse.RaqamiOnlineShop.repository;
 
+import com.RaqamiUniverse.RaqamiOnlineShop.model.Images;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.awt.*;
 import java.util.List;
 
-public interface ImageRepository extends JpaRepository<Image, Long> {
-    List<Image> findByProductId(Long id);
+@Repository
+public interface ImageRepository extends JpaRepository<Images, Long> {
+    List<Images> findByProductId(Long id);
 }

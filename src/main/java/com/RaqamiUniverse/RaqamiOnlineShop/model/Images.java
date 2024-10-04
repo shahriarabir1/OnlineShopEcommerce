@@ -23,7 +23,7 @@ public class Images {
 
     @Lob
     @JsonIgnore
-    private Blob image;
+    private Blob images;
     private String downloadUrl;
 
     @JsonIgnore

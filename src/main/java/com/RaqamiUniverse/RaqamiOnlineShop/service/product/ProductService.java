@@ -4,6 +4,7 @@ import com.RaqamiUniverse.RaqamiOnlineShop.dto.ImageDto;
 import com.RaqamiUniverse.RaqamiOnlineShop.dto.ProductDto;
 import com.RaqamiUniverse.RaqamiOnlineShop.exception.ProductNotFoundException;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Category;
+import com.RaqamiUniverse.RaqamiOnlineShop.model.Images;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Product;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.CategoryRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.ImageRepository;
@@ -95,7 +96,6 @@ public class ProductService implements IProductService {
     public List<Product> getProductsByBrand(String brand) {
         return Optional.ofNullable(productRepository.findByBrand(brand))
                 .orElseThrow(()->new ProductNotFoundException("Brand items not found"));
-
     }
 
     @Override
@@ -192,7 +192,7 @@ public class ProductService implements IProductService {
     @Override
     public ProductDto convertToDto(Product product) {
         ProductDto dto=modelMapper.map(product,ProductDto.class);
-        List<Image> images=imageRepository.findByProductId(product.getId());
+        List<Images> images=imageRepository.findByProductId(product.getId());
         List<ImageDto> imageDto=images
                 .stream()
                 .map(image -> modelMapper.map(image,ImageDto.class))
