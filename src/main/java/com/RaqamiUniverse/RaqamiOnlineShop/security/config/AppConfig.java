@@ -34,6 +34,7 @@ import java.util.List;
 public class AppConfig {
 
     private final ShopDetailsService shopDetailsService;
+    private final JwtFilter jwtFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -65,9 +66,11 @@ public class AppConfig {
                           r -> r.
                                   requestMatchers("/api/v1/").
                                   authenticated()
+                                  .requestMatchers("/api/v1/users/user/create","/api/v1/users/user/auth","/api/v1/auth/login")
+                                  .permitAll()
                                   .anyRequest()
                                   .permitAll())
-                  .addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class).csrf(AbstractHttpConfigurer::disable)
+                  .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).csrf(AbstractHttpConfigurer::disable)
                   .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                   .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                   .formLogin(customizer -> customizer.disable());

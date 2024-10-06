@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public User getUserById(Long id) {
         User user=userRepository.findById(id).orElseThrow(()->new UserNotFound("user not found"));
@@ -48,7 +50,7 @@ public class UserService implements IUserService {
         newUser.setEmail(user.getEmail());
         newUser.setFirstName(user.getFirstName());
         newUser.setLastName(user.getLastName());
-        newUser.setPassword(user.getPassword());
+        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setPhone(user.getPhone());
         newUser.setRoles(List.of(roles));
         return userRepository.save(newUser);
