@@ -27,4 +27,11 @@ public class Address {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Address(String city, String street, String zip, String state, String country) {
+        this.city = city;
+        this.street = street;
+        this.zip = zip;
+        this.state = state;
+        this.country = country;
+    }
 }
