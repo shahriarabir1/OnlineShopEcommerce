@@ -10,6 +10,7 @@ import com.RaqamiUniverse.RaqamiOnlineShop.repository.CategoryRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.ImageRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.repository.ProductRepository;
 import com.RaqamiUniverse.RaqamiOnlineShop.request.CreateProductRequest;
+import com.RaqamiUniverse.RaqamiOnlineShop.request.UpdateProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -34,12 +35,14 @@ public class ProductService implements IProductService {
             prod.setInventory(inventory);
             return productRepository.save(prod);
         }
-        Category category= Optional.ofNullable(categoryRepository.findByName(product.getCategory().getName()))
+        Category category= Optional.ofNullable(categoryRepository.findByName(product.getCategory()))
                 .orElseGet(()->{
-                    Category newCategory = new Category(product.getCategory().getName());
+                    Category newCategory = new Category(product.getCategory());
+                    Product prods=productRepository.findByNameAndBrand(product.getName(),product.getBrand());
+                    newCategory.setProducts(List.of(prods));
                     return categoryRepository.save(newCategory);
                 });
-        product.setCategory(category);
+        product.setCategory(category.getName());
         return productRepository.save(createProduct(product,category));
     }
 
@@ -73,8 +76,8 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        Product prod=productRepository.findById(product.getId())
+    public Product updateProduct(UpdateProductRequest product,Long productId) {
+        Product prod=productRepository.findById(productId)
                 .orElseThrow(()->new ProductNotFoundException("Product not found"));
         prod.setName(product.getName());
         prod.setDescription(product.getDescription());

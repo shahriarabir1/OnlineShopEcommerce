@@ -40,8 +40,8 @@ public class AddressService implements IAddressService {
         Address address1=new Address(address.getCity()
                 ,address.getStreet(),address.getZip(),address.getState(),address.getCountry());
         address1.setUser(user);
+       return addressRepository.save(address1);
 
-        return address1;
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressController {
     private final AddressService addressService;
+
     @GetMapping("/address/user/{userId}")
     public ResponseEntity<ApiResponse>getAllAddresses(@PathVariable Long userId) {
         try {

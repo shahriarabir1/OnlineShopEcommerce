@@ -26,7 +26,7 @@ public class JwtProviders {
             secretKey= Base64.getEncoder().encodeToString(sk.getEncoded());
 
         }catch (NoSuchAlgorithmException e){
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
     public String generateToken(Authentication auth) {

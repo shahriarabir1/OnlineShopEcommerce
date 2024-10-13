@@ -3,6 +3,7 @@ package com.RaqamiUniverse.RaqamiOnlineShop.service.product;
 import com.RaqamiUniverse.RaqamiOnlineShop.dto.ProductDto;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.*;
 import com.RaqamiUniverse.RaqamiOnlineShop.request.CreateProductRequest;
+import com.RaqamiUniverse.RaqamiOnlineShop.request.UpdateProductRequest;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface IProductService {
     Product getProduct(Long productId);
     List<Product> getAllProducts();
     void deleteProduct(Long productId);
-    Product updateProduct(Product product);
+    Product updateProduct(UpdateProductRequest product,Long productId);
     List<Product> getProductsByCategory(String category);
     List<Product> getProductsByBrand(String brand);
     List<Product> getProductsByCategoryAndBrand(String category, String brand);
