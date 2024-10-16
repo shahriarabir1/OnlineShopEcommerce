@@ -223,7 +223,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
         }
     }
-    @GetMapping("/product/brand/count")
+    @GetMapping("/product/category/brand/count")
     public ResponseEntity<ApiResponse> countProductsByCategoryAndBrand(@RequestParam String category,@RequestParam String brand) {
         try {
             Long count=productService.countProductsByCategoryAndBrand(category,brand);

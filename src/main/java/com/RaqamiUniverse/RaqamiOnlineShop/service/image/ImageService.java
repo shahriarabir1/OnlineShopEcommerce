@@ -1,5 +1,6 @@
 package com.RaqamiUniverse.RaqamiOnlineShop.service.image;
 
+import com.RaqamiUniverse.RaqamiOnlineShop.dto.ImageDto;
 import com.RaqamiUniverse.RaqamiOnlineShop.exception.ProductNotFoundException;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Images;
 import com.RaqamiUniverse.RaqamiOnlineShop.model.Product;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
-import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,22 +37,33 @@ public class ImageService implements IImageService {
     }
 
     @Override
-    public Images saveImage(MultipartFile file, Long productId) {
+    public List<ImageDto> saveImages(List<MultipartFile> files, Long productId) {
         Product product=productRepository.findById(productId).orElseThrow(()->new ProductNotFoundException("Product not found"));
-        try {
-            Images image=new Images();
-            image.setProduct(product);
-            image.setImages(new SerialBlob(file.getBytes()));
-            image.setFileName(file.getOriginalFilename());
-            image.setFileType(file.getContentType());
-            String buildDownloadUrl = "/api/v1/images/image/download/";
-            String downloadUrl = buildDownloadUrl+image.getId();
-            image.setDownloadUrl(downloadUrl);
-            Images img=imageRepository.save(image);
-            return img;
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
-        }
+       List<ImageDto> imageDtoList=new ArrayList<>();
+       for(MultipartFile file : files){
+           try {
+               Images image=new Images();
+               image.setProduct(product);
+               image.setImages(new SerialBlob(file.getBytes()));
+               image.setFileName(file.getOriginalFilename());
+               image.setFileType(file.getContentType());
+               String buildDownloadUrl = "/api/v1/images/image/download/";
+               String downloadUrl = buildDownloadUrl+image.getId();
+               image.setDownloadUrl(downloadUrl);
+               Images img=imageRepository.save(image);
+               String newUrl=buildDownloadUrl+img.getId();
+               img.setDownloadUrl(newUrl);
+               imageRepository.save(img);
+               ImageDto imageDto=new ImageDto();
+               imageDto.setId(img.getId());
+               imageDto.setDownloadUrl(newUrl);
+               imageDto.setFileName(img.getFileName());
+               imageDtoList.add(imageDto);
+           } catch (SQLException | IOException e) {
+               throw new RuntimeException(e);
+           }
+       }
+       return imageDtoList;
     }
 
     @Override
@@ -65,8 +76,5 @@ public class ImageService implements IImageService {
         return null;
     }
 
-    @Override
-    public List<Images> saveAllImages(List<Images> images) {
-        return List.of();
-    }
+
 }
