@@ -103,10 +103,14 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version> <!-- Ensure a compatible version -->
+				<configuration>
+					<source>17</source> <!-- Replace with the Java version you're targeting -->
+					<target>17</target>
+				</configuration>
 			</plugin>
-
 		</plugins>
 		<finalName>docker-spring-boot</finalName>
 	</build>
